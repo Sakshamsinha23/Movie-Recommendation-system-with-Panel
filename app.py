@@ -22,18 +22,29 @@ def recommend(movie):
         recommended_movie_names.append(movies.iloc[i[0]].title)
     return recommended_movie_names, recommended_movie_posters
 
+# Define model paths
 model_dir = os.path.join(os.path.dirname(__file__), 'model')
 movie_list_path = os.path.join(model_dir, 'movie_list.pkl')
 similarity_path = os.path.join(model_dir, 'similarity.pkl')
 
-if not os.path.exists(movie_list_path) or not os.path.exists(similarity_path):
-    st.error("Model files not found. Please ensure 'movie_list.pkl' and 'similarity.pkl' exist in the 'model' folder.")
+# Show readable error if loading fails
+try:
+    with open(movie_list_path, 'rb') as f:
+        movies = pickle.load(f)
+    with open(similarity_path, 'rb') as f:
+        similarity = pickle.load(f)
+except FileNotFoundError as fnf_err:
+    st.error(f"❌ File not found:\n\n{fnf_err}")
+    st.stop()
+except ModuleNotFoundError as mod_err:
+    st.error(f"❌ Module not found during unpickling:\n\n{mod_err}\n\nTry saving the .pkl again using standard pandas/NumPy objects.")
+    st.stop()
+except Exception as e:
+    st.error(f"❌ Unexpected error:\n\n{e}")
     st.stop()
 
-movies = pickle.load(open(movie_list_path, 'rb'))
-similarity = pickle.load(open(similarity_path, 'rb'))
-
-st.header('Movie Recommender System')
+# App UI
+st.header('🎬 Movie Recommender System')
 
 movie_list = movies['title'].values
 selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
