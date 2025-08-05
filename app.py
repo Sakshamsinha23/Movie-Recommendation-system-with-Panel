@@ -4,7 +4,8 @@ import requests
 import os
 
 def fetch_poster(movie_id):
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US"
+    api_key = st.secrets.get("TMDB_API_KEY", "8265bd1679663a7ea12ac168da84d2e8")
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
     data = requests.get(url).json()
     poster_path = data.get('poster_path')
     if poster_path:
